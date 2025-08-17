@@ -1,103 +1,130 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import CodeConfirmation from "@/features/extract-enroll-code/components/code-confirmation"
+import { CourseResults } from "@/features/extract-enroll-code/components/course-results"
+import ExtractedTextDisplay from "@/features/extract-enroll-code/components/extract-text-display"
+import FileUpload from "@/features/extract-enroll-code/components/file-upload"
+import { findEnrollmentCodes, parseCourseData } from "@/features/extract-enroll-code/lib/course-data"
+import { CourseData } from "@/features/extract-enroll-code/types/course"
+import { Button } from "@/shared/components/ui/button"
+import { useFileUpload } from "@/shared/hooks/use-file-upload"
+import { useOCRProcessor } from "@/shared/hooks/use-ocr-prosessor"
+import { tryCatch } from "@/shared/lib/try-catch"
+import { Loader2 } from "lucide-react"
+import type React from "react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
+
+
+export default function HomePage() {
+  const [extractedCourses, setExtractedCourses] = useState<CourseData[]>([])
+  const [courseData, setCourseData] = useState<CourseData[]>([])
+
+  const fileUpload = useFileUpload()
+  const ocrProcessor = useOCRProcessor()
+
+  useEffect(() => {
+    const loadCourseData = async () => {
+      const { data: response, error: fetchError } = await tryCatch(fetch("/course-data.csv"))
+      if (fetchError) {
+        console.error("Failed to load course data:", fetchError)
+        toast.error("Gagal memuat data mata kuliah")
+        return
+      }
+
+      const { data: csvText, error: parseError } = await tryCatch(response.text())
+      if (parseError) {
+        console.error("Failed to parse course data:", parseError)
+        toast.error("Gagal memuat data mata kuliah")
+        return
+      }
+
+      const parsed = parseCourseData(csvText)
+      setCourseData(parsed)
+    }
+
+    loadCourseData()
+  }, [])
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    fileUpload.handleFileSelect(event)
+    setExtractedCourses([])
+    ocrProcessor.resetOCR()
+  }
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    fileUpload.handleDrop(event)
+    setExtractedCourses([])
+    ocrProcessor.resetOCR()
+  }
+
+  const confirmCodes = () => {
+    const validCodes = ocrProcessor.editableCodes.filter((item) => item.code.trim() !== "")
+    const courseCodes = validCodes.map((item) => item.code)
+    const courseClasses = validCodes.map((item) => item.class)
+    const coursesWithEnrollment = findEnrollmentCodes(courseCodes, courseClasses, courseData)
+    setExtractedCourses(coursesWithEnrollment)
+    ocrProcessor.resetOCR()
+
+    toast.success(`Ditemukan ${coursesWithEnrollment.length} kode enrollment`)
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-background">
+      <div className="max-w-4xl mx-auto p-6 space-y-8">
+        <div className="text-center space-y-3">
+          <h1 className="text-4xl font-bold text-foreground">info kode enroll bang</h1>
+          <p className="text-muted-foreground text-lg">
+            Upload screenshot jadwal untuk mendapatkan kode enrollment dengan mudah
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        <FileUpload
+          selectedFile={fileUpload.selectedFile}
+          previewUrl={fileUpload.previewUrl}
+          onFileSelect={handleFileSelect}
+          onDrop={handleDrop}
+          onDragOver={fileUpload.handleDragOver}
+        />
+
+        {fileUpload.selectedFile && !ocrProcessor.isConfirming && extractedCourses.length === 0 && (
+          <div className="flex justify-center">
+            <Button
+              onClick={() => ocrProcessor.processImage(fileUpload.selectedFile!)}
+              disabled={ocrProcessor.isProcessing}
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg"
+            >
+              {ocrProcessor.isProcessing ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-3 animate-spin" />
+                  Memproses...
+                </>
+              ) : (
+                "Ekstrak Kode Mata Kuliah"
+              )}
+            </Button>
+          </div>
+        )}
+
+        {ocrProcessor.isConfirming && (
+          <CodeConfirmation
+            editableCodes={ocrProcessor.editableCodes}
+            onUpdateCode={ocrProcessor.updateCode}
+            onRemoveCode={ocrProcessor.removeCode}
+            onAddNewCode={ocrProcessor.addNewCode}
+            onConfirmCodes={confirmCodes}
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        )}
+
+        <ExtractedTextDisplay
+          extractedText={ocrProcessor.extractedText}
+          showRawText={ocrProcessor.showRawText}
+          onToggleRawText={ocrProcessor.toggleRawText}
+        />
+
+        <CourseResults extractedCourses={extractedCourses} />
+      </div>
     </div>
-  );
+  )
 }
