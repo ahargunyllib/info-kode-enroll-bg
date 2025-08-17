@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
+import Tesseract from "tesseract.js"
 import { tryCatch } from "../lib/try-catch"
 
 type ExtractedCode = {
@@ -56,10 +57,7 @@ export function useOCRProcessor() {
     const formData = new FormData()
     formData.append("image", file)
 
-    const { data: response, error } = await tryCatch(fetch("/api/ocr", {
-      method: "POST",
-      body: formData,
-    }))
+    const { data: result, error } = await tryCatch(Tesseract.recognize(file, "ind"))
     if (error) {
       console.error("OCR processing error:", error)
       toast.error("Terjadi kesalahan saat memproses gambar", {
@@ -68,8 +66,9 @@ export function useOCRProcessor() {
       setState((prev) => ({ ...prev, isProcessing: false }))
       return
     }
-    if (!response || !response.ok) {
-      console.error("OCR processing failed:", response)
+
+    if (!result || !result.data || !result.data.text) {
+      console.error("OCR processing failed:", result)
       toast.error("Terjadi kesalahan saat memproses gambar", {
         description: "Silakan coba lagi.",
       })
@@ -77,20 +76,12 @@ export function useOCRProcessor() {
       return
     }
 
-    const result = await response.json()
-    if (!result.success) {
-      console.error("OCR processing error:", result.error)
-      toast.error("Terjadi kesalahan saat memproses gambar", {
-        description: "Silakan coba lagi.",
-      })
-      setState((prev) => ({ ...prev, isProcessing: false }))
-      return
-    }
+    const text = result.data.text
 
-    const codes = extractCourseCodes(result.text)
+    const codes = extractCourseCodes(text)
     setState((prev) => ({
       ...prev,
-      extractedText: result.text,
+      extractedText: text,
       extractedCodes: codes,
       editableCodes: [...codes],
       isConfirming: true,
