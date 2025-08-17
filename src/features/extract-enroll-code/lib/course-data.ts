@@ -1,10 +1,4 @@
-export type CourseData = {
-  programStudi: string
-  kodeMK: string
-  namaMK: string
-  kelas: string
-  kodeEnroll: string
-}
+import { CourseData } from "../types/course"
 
 // Parse CSV data into structured format
 export function parseCourseData(csvText: string): CourseData[] {
