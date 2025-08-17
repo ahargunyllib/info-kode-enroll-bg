@@ -3,7 +3,7 @@
 import React from "react";
 import { tryCatch } from "../lib/try-catch";
 
-export function useCopyToClipboard() {
+export const useCopyToClipboard = (): [string | null, (value: string) => void] => {
   const [state, setState] = React.useState<string | null>(null);
 
   const copyToClipboard = React.useCallback((value: string) => {
