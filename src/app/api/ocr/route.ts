@@ -17,7 +17,6 @@ export async function POST(request: NextRequest) {
     // Initialize Tesseract worker
     const worker = await createWorker("ind", 1, {
       logger: (m) => console.log(m),
-      workerPath: "./node_modules/tesseract.js/src/worker-script/node/index.js",
     })
 
     // Perform OCR
