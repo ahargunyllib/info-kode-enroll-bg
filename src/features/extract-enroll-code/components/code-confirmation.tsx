@@ -2,6 +2,7 @@
 
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
 import { Edit3, X } from "lucide-react";
 
 type CodeConfirmationProps = {
@@ -20,13 +21,13 @@ export default function CodeConfirmation({
   onConfirmCodes,
 }: CodeConfirmationProps) {
   return (
-    <Card className="border-border">
+    <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-xl">
+        <CardTitle className="flex items-center gap-3">
           <Edit3 className="h-6 w-6 text-primary" />
           Konfirmasi Kode
         </CardTitle>
-        <CardDescription className="text-base">
+        <CardDescription>
           Periksa dan edit kode mata kuliah beserta kelasnya. Hapus yang salah atau tambah yang terlewat.
         </CardDescription>
       </CardHeader>
@@ -34,26 +35,25 @@ export default function CodeConfirmation({
         <div className="space-y-3">
           {editableCodes.map((item, index) => (
             <div key={index} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
-              <input
+              <Input
                 type="text"
                 value={item.code}
                 onChange={(e) => onUpdateCode(index, "code", e.target.value)}
-                className="flex-1 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-background font-mono text-sm"
+                className="flex-1"
                 placeholder="Kode MK (CIF65115)"
               />
-              <input
+              <Input
                 type="text"
                 value={item.class}
                 onChange={(e) => onUpdateCode(index, "class", e.target.value)}
-                className="w-20 px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-background font-mono text-sm text-center"
+                className="w-20"
                 placeholder="Kelas"
                 maxLength={2}
               />
               <Button
-                variant="outline"
+                variant="destructive"
                 size="sm"
                 onClick={() => onRemoveCode(index)}
-                className="text-destructive hover:text-destructive border-border"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -62,10 +62,10 @@ export default function CodeConfirmation({
         </div>
 
         <div className="flex gap-3">
-          <Button variant="outline" onClick={onAddNewCode} className="flex-1 border-border bg-transparent">
+          <Button variant="outline" onClick={onAddNewCode} className="flex-1">
             Tambah Kode
           </Button>
-          <Button onClick={onConfirmCodes} className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button onClick={onConfirmCodes} className="flex-1">
             Konfirmasi & Cari Enrollment Code
           </Button>
         </div>

@@ -33,10 +33,10 @@ export function CourseResults({ extractedCourses }: CourseResultsProps) {
   }
 
   return (
-    <Card className="border-border">
+    <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl">Kode Enrollment Ditemukan</CardTitle>
-        <CardDescription className="text-base">
+        <CardTitle>Kode Enrollment Ditemukan</CardTitle>
+        <CardDescription>
           {extractedCourses.length} kode enrollment berhasil diekstrak
         </CardDescription>
       </CardHeader>
@@ -69,7 +69,6 @@ export function CourseResults({ extractedCourses }: CourseResultsProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleCopy(course.kodeEnroll)}
-                  className="border-border hover:bg-primary hover:text-primary-foreground"
                 >
                   <Copy className="h-4 w-4" />
                 </Button>

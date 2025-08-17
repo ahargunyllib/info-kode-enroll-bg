@@ -14,13 +14,13 @@ type FileUploadProps = {
 
 export default function FileUpload({ selectedFile, previewUrl, onFileSelect, onDrop, onDragOver }: FileUploadProps) {
   return (
-    <Card className="border-border">
+    <Card>
       <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3 text-xl">
+        <CardTitle className="flex items-center gap-3">
           <Upload className="h-6 w-6 text-primary" />
           Upload Screenshot
         </CardTitle>
-        <CardDescription className="text-base">Drag & drop atau klik untuk memilih gambar jadwal kelas</CardDescription>
+        <CardDescription>Drag & drop atau klik untuk memilih gambar jadwal kelas</CardDescription>
       </CardHeader>
       <CardContent>
         <div

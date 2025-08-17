@@ -70,7 +70,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background py-20">
       <div className="max-w-4xl mx-auto p-6 space-y-8">
         <div className="text-center space-y-3">
           <h1 className="text-4xl font-bold text-foreground">info kode enroll bang</h1>
@@ -93,7 +93,6 @@ export default function HomePage() {
               onClick={() => ocrProcessor.processImage(fileUpload.selectedFile!)}
               disabled={ocrProcessor.isProcessing}
               size="lg"
-              className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 text-lg"
             >
               {ocrProcessor.isProcessing ? (
                 <>
