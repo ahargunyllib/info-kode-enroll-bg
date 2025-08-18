@@ -34,7 +34,7 @@ export function CourseResults({ extractedCourses }: CourseResultsProps) {
 
   return (
     <Card>
-      <CardHeader className="pb-4">
+      <CardHeader>
         <CardTitle>Kode Enrollment Ditemukan</CardTitle>
         <CardDescription>
           {extractedCourses.length} kode enrollment berhasil diekstrak

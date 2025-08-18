@@ -21,12 +21,12 @@ export default function ExtractedTextDisplay({ extractedText, showRawText, onTog
           <Button variant="outline" size="sm" onClick={onToggleRawText}>
             {showRawText ? (
               <>
-                <EyeOff className="h-4 w-4 mr-2" />
+                <EyeOff />
                 Sembunyikan
               </>
             ) : (
               <>
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye />
                 Lihat Teks
               </>
             )}
@@ -34,7 +34,7 @@ export default function ExtractedTextDisplay({ extractedText, showRawText, onTog
         </CardTitle>
       </CardHeader>
       {showRawText && (
-        <CardContent className="pt-4">
+        <CardContent>
           <div className="bg-gray-50 p-4 rounded-md max-h-40 overflow-y-auto">
             <pre className="text-sm whitespace-pre-wrap font-mono">{extractedText}</pre>
           </div>

@@ -1,9 +1,9 @@
 "use client"
 
 import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
-import { Edit3, X } from "lucide-react";
+import { X } from "lucide-react";
 
 type CodeConfirmationProps = {
   editableCodes: { code: string; class: string }[]
@@ -22,9 +22,8 @@ export default function CodeConfirmation({
 }: CodeConfirmationProps) {
   return (
     <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-3">
-          <Edit3 className="h-6 w-6 text-primary" />
+      <CardHeader>
+        <CardTitle>
           Konfirmasi Kode
         </CardTitle>
         <CardDescription>
@@ -61,15 +60,15 @@ export default function CodeConfirmation({
           ))}
         </div>
 
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onAddNewCode} className="flex-1">
-            Tambah Kode
-          </Button>
-          <Button onClick={onConfirmCodes} className="flex-1">
-            Cari Kode Enroll
-          </Button>
-        </div>
       </CardContent>
+      <CardFooter className="flex gap-4">
+        <Button variant="outline" onClick={onAddNewCode} className="flex-1">
+          Tambah Kode
+        </Button>
+        <Button onClick={onConfirmCodes} className="flex-1">
+          Cari Kode Enroll
+        </Button>
+      </CardFooter>
     </Card>
   )
 }
