@@ -66,7 +66,7 @@ export default function CodeConfirmation({
             Tambah Kode
           </Button>
           <Button onClick={onConfirmCodes} className="flex-1">
-            Konfirmasi & Cari Enrollment Code
+            Cari Kode Enroll
           </Button>
         </div>
       </CardContent>
