@@ -42,6 +42,5 @@
     "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
       "pnpm dlx ultracite format"
     ]
-  },
-  "packageManager": "pnpm@9.0.0"
+  }
 }
