@@ -1,4 +1,5 @@
 import { CourseData } from "../types/course"
+import { getMajorMapKey, MajorMap, MajorMapValue } from "./enums"
 
 // Parse CSV data into structured format
 export function parseCourseData(csvText: string): CourseData[] {
@@ -8,7 +9,7 @@ export function parseCourseData(csvText: string): CourseData[] {
   return dataLines.map((line) => {
     const [programStudi, kodeMK, namaMK, kelas, kodeEnroll] = line.split(",")
     const courseData = {
-      programStudi: programStudi?.trim() || "",
+      programStudi: (programStudi?.trim() || "") as MajorMapValue,
       kodeMK: kodeMK?.trim() || "",
       namaMK: namaMK?.trim() || "",
       kelas: kelas?.trim() || "",
@@ -29,7 +30,8 @@ export function initializeCourseMap(courseData: CourseData[]): void {
   }
 
   for (const course of courseData) {
-    const key = `${course.kodeMK}-${course.kelas}`
+    const majorKey = getMajorMapKey(course.programStudi)
+    const key = `${majorKey}-${course.kodeMK}-${course.kelas}`
     courseMap.set(key, course)
   }
 }
@@ -38,6 +40,7 @@ export function initializeCourseMap(courseData: CourseData[]): void {
 export function findEnrollmentCodes(
   extractedCodes: string[],
   extractedClasses: string[],
+  majorKey: keyof typeof MajorMap,
   courseData: CourseData[],
 ): CourseData[] {
   if (!courseMap) {
@@ -49,7 +52,7 @@ export function findEnrollmentCodes(
   for (let i = 0; i < extractedCodes.length; i++) {
     const code = extractedCodes[i]
     const className = extractedClasses[i] || ""
-    const key = `${code}-${className}`
+    const key = `${majorKey}-${code}-${className}`
 
     const match = courseMap!.get(key)
 
