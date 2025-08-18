@@ -8,28 +8,14 @@ on:
   push:
     branches: [main]
 
-concurrency:
-  group: vercel-prod-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Ensure correct Node & pnpm are available on PATH
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Enable Corepack & pin pnpm
-        run: |
-          corepack enable
-          # Use pnpm 10 to match lockfile v9 (adjust version if you prefer)
-          corepack prepare pnpm@10.0.0 --activate
-          pnpm --version
+      - name: Install pnpm
+        run: npm install --global pnpm@latest
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
