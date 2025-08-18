@@ -51,7 +51,7 @@ export function useOCRProcessor() {
     return results
   }
 
-  const processImage = async (file: File) => {
+  const processImage = async (file: File | string) => {
     setState((prev) => ({ ...prev, isProcessing: true }))
 
     const formData = new FormData()

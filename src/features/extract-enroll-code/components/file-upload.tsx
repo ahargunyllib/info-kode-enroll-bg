@@ -1,19 +1,22 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card"
-import { FileImage } from "lucide-react"
+import { FileImage, Crop } from 'lucide-react';
 import type React from "react"
 import ExampleImageDialog from "./example-image-dialog"
+import { Button } from '@/shared/components/ui/button';
 
 type FileUploadProps = {
   selectedFile: File | null
   previewUrl: string | null
+  croppedImageUrl: string | null
   onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void
   onDrop: (event: React.DragEvent<HTMLDivElement>) => void
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void
+  onStartCropping: () => void
 }
 
-export default function FileUpload({ selectedFile, previewUrl, onFileSelect, onDrop, onDragOver }: FileUploadProps) {
+export default function FileUpload({ selectedFile, previewUrl, croppedImageUrl, onFileSelect, onDrop, onDragOver, onStartCropping }: FileUploadProps) {
   return (
     <Card>
       <CardHeader>
@@ -33,11 +36,25 @@ export default function FileUpload({ selectedFile, previewUrl, onFileSelect, onD
           {previewUrl ? (
             <div className="space-y-4">
               <img
-                src={previewUrl || "/placeholder.svg"}
+                src={croppedImageUrl || previewUrl}
                 alt="Preview"
                 className="max-w-full max-h-80 mx-auto rounded-lg shadow-lg border border-border"
               />
               <p className="text-sm text-muted-foreground font-medium">{selectedFile?.name}</p>
+              {!croppedImageUrl && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onStartCropping()
+                  }}
+                  className="mt-2"
+                >
+                  <Crop className="h-4 w-4 mr-2" />
+                  Crop Gambar
+                </Button>
+              )}
             </div>
           ) : (
             <div className="space-y-6">

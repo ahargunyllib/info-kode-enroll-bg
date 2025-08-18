@@ -8,12 +8,16 @@ import { toast } from "sonner"
 type FileState = {
   selectedFile: File | null
   previewUrl: string | null
+  croppedImageUrl: string | null
+  isCropping: boolean
 }
 
 export const useFileUpload = () => {
   const [fileState, setFileState] = useState<FileState>({
     selectedFile: null,
     previewUrl: null,
+    croppedImageUrl: null,
+    isCropping: false,
   })
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +34,7 @@ export const useFileUpload = () => {
     }
 
     const url = URL.createObjectURL(file)
-    setFileState({ selectedFile: file, previewUrl: url })
+    setFileState({ selectedFile: file, previewUrl: url, croppedImageUrl: null, isCropping: false })
   }
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -38,7 +42,7 @@ export const useFileUpload = () => {
     const file = event.dataTransfer.files[0]
     if (file && file.type.startsWith("image/")) {
       const url = URL.createObjectURL(file)
-      setFileState({ selectedFile: file, previewUrl: url })
+      setFileState({ selectedFile: file, previewUrl: url, croppedImageUrl: null, isCropping: false })
     }
   }
 
@@ -46,12 +50,32 @@ export const useFileUpload = () => {
     event.preventDefault()
   }
 
+  const startCropping = () => {
+    setFileState((prev) => ({ ...prev, isCropping: true }))
+  }
+
+  const handleCropComplete = (croppedUrl: string) => {
+    setFileState((prev) => ({
+      ...prev,
+      croppedImageUrl: croppedUrl,
+      isCropping: false,
+    }))
+  }
+
+  const cancelCropping = () => {
+    setFileState((prev) => ({ ...prev, isCropping: false }))
+  }
+
   const resetFile = () => {
     if (fileState.previewUrl) {
       URL.revokeObjectURL(fileState.previewUrl)
     }
 
-    setFileState({ selectedFile: null, previewUrl: null })
+    if (fileState.croppedImageUrl) {
+      URL.revokeObjectURL(fileState.croppedImageUrl)
+    }
+
+    setFileState({ selectedFile: null, previewUrl: null, croppedImageUrl: null, isCropping: false })
   }
 
   return {
@@ -59,6 +83,9 @@ export const useFileUpload = () => {
     handleFileSelect,
     handleDrop,
     handleDragOver,
+    startCropping,
+    handleCropComplete,
+    cancelCropping,
     resetFile,
   }
 }

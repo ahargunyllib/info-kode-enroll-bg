@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import ImageCropper from "../features/extract-enroll-code/components/image-cropper"
 import MajorSelector from "../features/extract-enroll-code/components/major-selector"
 
 
@@ -61,6 +62,14 @@ export default function HomePage() {
     ocrProcessor.resetOCR()
   }
 
+  const processCurrentImage = () => {
+    if (fileUpload.selectedFile) {
+      // Use cropped image URL if available, otherwise use original file
+      const imageToProcess = fileUpload.croppedImageUrl ? fileUpload.croppedImageUrl : fileUpload.selectedFile
+      ocrProcessor.processImage(imageToProcess)
+    }
+  }
+
   const confirmCodes = () => {
     if (!selectedMajor) {
       toast.error("Silakan pilih jurusan terlebih dahulu")
@@ -89,18 +98,30 @@ export default function HomePage() {
 
         <MajorSelector selectedMajor={selectedMajor} setSelectedMajor={setSelectedMajor} />
 
-        <FileUpload
-          selectedFile={fileUpload.selectedFile}
-          previewUrl={fileUpload.previewUrl}
-          onFileSelect={handleFileSelect}
-          onDrop={handleDrop}
-          onDragOver={fileUpload.handleDragOver}
-        />
+        {fileUpload.isCropping && fileUpload.previewUrl && (
+          <ImageCropper
+            imageUrl={fileUpload.previewUrl}
+            onCropComplete={fileUpload.handleCropComplete}
+            onCancel={() => fileUpload.cancelCropping}
+          />
+        )}
 
-        {fileUpload.selectedFile && !ocrProcessor.isConfirming && extractedCourses.length === 0 && (
+        {!fileUpload.isCropping && (
+          <FileUpload
+            selectedFile={fileUpload.selectedFile}
+            previewUrl={fileUpload.previewUrl}
+            croppedImageUrl={fileUpload.croppedImageUrl}
+            onFileSelect={handleFileSelect}
+            onDrop={handleDrop}
+            onDragOver={fileUpload.handleDragOver}
+            onStartCropping={fileUpload.startCropping}
+          />
+        )}
+
+        {fileUpload.selectedFile && !ocrProcessor.isConfirming && extractedCourses.length === 0 && !fileUpload.isCropping && (
           <div className="flex justify-center">
             <Button
-              onClick={() => ocrProcessor.processImage(fileUpload.selectedFile!)}
+              onClick={processCurrentImage}
               disabled={ocrProcessor.isProcessing}
               size="lg"
             >
