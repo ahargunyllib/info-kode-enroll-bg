@@ -5,6 +5,7 @@ import { CourseResults } from "@/features/extract-enroll-code/components/course-
 import ExtractedTextDisplay from "@/features/extract-enroll-code/components/extract-text-display"
 import FileUpload from "@/features/extract-enroll-code/components/file-upload"
 import { findEnrollmentCodes, parseCourseData } from "@/features/extract-enroll-code/lib/course-data"
+import { MajorMapKey } from "@/features/extract-enroll-code/lib/enums"
 import { CourseData } from "@/features/extract-enroll-code/types/course"
 import { Button } from "@/shared/components/ui/button"
 import { useFileUpload } from "@/shared/hooks/use-file-upload"
@@ -14,11 +15,13 @@ import { Loader2 } from "lucide-react"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import MajorSelector from "../features/extract-enroll-code/components/major-selector"
 
 
 export default function HomePage() {
   const [extractedCourses, setExtractedCourses] = useState<CourseData[]>([])
   const [courseData, setCourseData] = useState<CourseData[]>([])
+  const [selectedMajor, setSelectedMajor] = useState<MajorMapKey | undefined>(undefined)
 
   const fileUpload = useFileUpload()
   const ocrProcessor = useOCRProcessor()
@@ -59,10 +62,15 @@ export default function HomePage() {
   }
 
   const confirmCodes = () => {
+    if (!selectedMajor) {
+      toast.error("Silakan pilih jurusan terlebih dahulu")
+      return
+    }
+
     const validCodes = ocrProcessor.editableCodes.filter((item) => item.code.trim() !== "")
     const courseCodes = validCodes.map((item) => item.code)
     const courseClasses = validCodes.map((item) => item.class)
-    const coursesWithEnrollment = findEnrollmentCodes(courseCodes, courseClasses, courseData)
+    const coursesWithEnrollment = findEnrollmentCodes(courseCodes, courseClasses, selectedMajor, courseData)
     setExtractedCourses(coursesWithEnrollment)
     ocrProcessor.resetOCR()
 
@@ -78,6 +86,8 @@ export default function HomePage() {
             Upload screenshot jadwal untuk mendapatkan kode enrollment dengan mudah
           </p>
         </div>
+
+        <MajorSelector selectedMajor={selectedMajor} setSelectedMajor={setSelectedMajor} />
 
         <FileUpload
           selectedFile={fileUpload.selectedFile}
