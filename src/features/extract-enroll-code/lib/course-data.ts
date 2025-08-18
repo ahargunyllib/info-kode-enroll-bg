@@ -1,38 +1,38 @@
-import { CourseData } from "../types/course"
-import { getMajorMapKey, MajorMap, MajorMapValue } from "./enums"
+import type { CourseData } from '../types/course';
+import { getMajorMapKey, type MajorMap, type MajorMapValue } from './enums';
 
 // Parse CSV data into structured format
 export function parseCourseData(csvText: string): CourseData[] {
-  const lines = csvText.trim().split("\n")
-  const dataLines = lines.slice(1)
+  const lines = csvText.trim().split('\n');
+  const dataLines = lines.slice(1);
 
   return dataLines.map((line) => {
-    const [programStudi, kodeMK, namaMK, kelas, kodeEnroll] = line.split(",")
+    const [programStudi, kodeMK, namaMK, kelas, kodeEnroll] = line.split(',');
     const courseData = {
-      programStudi: (programStudi?.trim() || "") as MajorMapValue,
-      kodeMK: kodeMK?.trim() || "",
-      namaMK: namaMK?.trim() || "",
-      kelas: kelas?.trim() || "",
-      kodeEnroll: kodeEnroll?.trim() || "",
-    }
-    return courseData
-  })
+      programStudi: (programStudi?.trim() || '') as MajorMapValue,
+      kodeMK: kodeMK?.trim() || '',
+      namaMK: namaMK?.trim() || '',
+      kelas: kelas?.trim() || '',
+      kodeEnroll: kodeEnroll?.trim() || '',
+    };
+    return courseData;
+  });
 }
 
-let courseMap: Map<string, CourseData> | null = null
+let courseMap: Map<string, CourseData> | null = null;
 
 // Initialize course map for fast lookups
 export function initializeCourseMap(courseData: CourseData[]): void {
-  courseMap = new Map()
+  courseMap = new Map();
 
   if (!courseMap) {
-    return
+    return;
   }
 
   for (const course of courseData) {
-    const majorKey = getMajorMapKey(course.programStudi)
-    const key = `${majorKey}-${course.kodeMK}-${course.kelas}`
-    courseMap.set(key, course)
+    const majorKey = getMajorMapKey(course.programStudi);
+    const key = `${majorKey}-${course.kodeMK}-${course.kelas}`;
+    courseMap.set(key, course);
   }
 }
 
@@ -41,25 +41,25 @@ export function findEnrollmentCodes(
   extractedCodes: string[],
   extractedClasses: string[],
   majorKey: keyof typeof MajorMap,
-  courseData: CourseData[],
+  courseData: CourseData[]
 ): CourseData[] {
   if (!courseMap) {
-    initializeCourseMap(courseData)
+    initializeCourseMap(courseData);
   }
 
-  const results: CourseData[] = []
+  const results: CourseData[] = [];
 
   for (let i = 0; i < extractedCodes.length; i++) {
-    const code = extractedCodes[i]
-    const className = extractedClasses[i] || ""
-    const key = `${majorKey}-${code}-${className}`
+    const code = extractedCodes[i];
+    const className = extractedClasses[i] || '';
+    const key = `${majorKey}-${code}-${className}`;
 
-    const match = courseMap!.get(key)
+    const match = courseMap?.get(key);
 
     if (match) {
-      results.push(match)
+      results.push(match);
     }
   }
 
-  return results
+  return results;
 }

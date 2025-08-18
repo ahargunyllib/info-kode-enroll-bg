@@ -1,17 +1,28 @@
-"use client"
+'use client';
 
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Input } from "@/shared/components/ui/input";
-import { X } from "lucide-react";
+import { X } from 'lucide-react';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
 
 type CodeConfirmationProps = {
-  editableCodes: { code: string; class: string }[]
-  onUpdateCode: (index: number, field: "code" | "class", newValue: string) => void
-  onRemoveCode: (index: number) => void
-  onAddNewCode: () => void
-  onConfirmCodes: () => void
-}
+  editableCodes: { code: string; class: string }[];
+  onUpdateCode: (
+    index: number,
+    field: 'code' | 'class',
+    newValue: string
+  ) => void;
+  onRemoveCode: (index: number) => void;
+  onAddNewCode: () => void;
+  onConfirmCodes: () => void;
+};
 
 export default function CodeConfirmation({
   editableCodes,
@@ -23,52 +34,53 @@ export default function CodeConfirmation({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>
-          Konfirmasi Kode
-        </CardTitle>
+        <CardTitle>Konfirmasi Kode</CardTitle>
         <CardDescription>
-          Periksa dan edit kode mata kuliah beserta kelasnya. Hapus yang salah atau tambah yang terlewat.
+          Periksa dan edit kode mata kuliah beserta kelasnya. Hapus yang salah
+          atau tambah yang terlewat.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-3">
           {editableCodes.map((item, index) => (
-            <div key={index} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
+            <div
+              className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
+              key={`code-${item.code}-${item.class}-${index}`}
+            >
               <Input
+                className="flex-1"
+                onChange={(e) => onUpdateCode(index, 'code', e.target.value)}
+                placeholder="Kode MK (CIF65115)"
                 type="text"
                 value={item.code}
-                onChange={(e) => onUpdateCode(index, "code", e.target.value)}
-                className="flex-1"
-                placeholder="Kode MK (CIF65115)"
               />
               <Input
+                className="w-20"
+                maxLength={2}
+                onChange={(e) => onUpdateCode(index, 'class', e.target.value)}
+                placeholder="Kelas"
                 type="text"
                 value={item.class}
-                onChange={(e) => onUpdateCode(index, "class", e.target.value)}
-                className="w-20"
-                placeholder="Kelas"
-                maxLength={2}
               />
               <Button
-                variant="destructive"
-                size="sm"
                 onClick={() => onRemoveCode(index)}
+                size="sm"
+                variant="destructive"
               >
                 <X className="h-4 w-4" />
               </Button>
             </div>
           ))}
         </div>
-
       </CardContent>
       <CardFooter className="flex gap-4">
-        <Button variant="outline" onClick={onAddNewCode} className="flex-1">
+        <Button className="flex-1" onClick={onAddNewCode} variant="outline">
           Tambah Kode
         </Button>
-        <Button onClick={onConfirmCodes} className="flex-1">
+        <Button className="flex-1" onClick={onConfirmCodes}>
           Cari Kode Enroll
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -1,22 +1,24 @@
-"use client"
+'use client';
 
-import React from "react";
-import { tryCatch } from "../lib/try-catch";
+import React from 'react';
+import { tryCatch } from '../lib/try-catch';
 
-export const useCopyToClipboard = (): [string | null, (value: string) => void] => {
+export const useCopyToClipboard = (): [
+  string | null,
+  (value: string) => void,
+] => {
   const [state, setState] = React.useState<string | null>(null);
 
   const copyToClipboard = React.useCallback((value: string) => {
     const handleCopy = async () => {
       if (!navigator?.clipboard?.writeText) {
-        throw new Error("Clipboard API not supported");
+        throw new Error('Clipboard API not supported');
       }
 
       const { error } = await tryCatch(navigator.clipboard.writeText(value));
       setState(value);
 
       if (error) {
-        console.error("Failed to copy to clipboard:", error);
         return;
       }
     };
@@ -25,4 +27,4 @@ export const useCopyToClipboard = (): [string | null, (value: string) => void] =
   }, []);
 
   return [state, copyToClipboard];
-}
+};
