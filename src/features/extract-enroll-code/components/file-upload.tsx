@@ -1,8 +1,9 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card"
-import { FileImage, Upload } from "lucide-react"
+import { FileImage } from "lucide-react"
 import type React from "react"
+import ExampleImageDialog from "./example-image-dialog"
 
 type FileUploadProps = {
   selectedFile: File | null
@@ -20,6 +21,7 @@ export default function FileUpload({ selectedFile, previewUrl, onFileSelect, onD
           Upload Screenshot
         </CardTitle>
         <CardDescription>Drag & drop atau klik untuk memilih gambar jadwal kelas</CardDescription>
+        <ExampleImageDialog />
       </CardHeader>
       <CardContent>
         <div
