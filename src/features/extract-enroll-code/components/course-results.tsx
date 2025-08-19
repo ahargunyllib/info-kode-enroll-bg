@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -46,6 +47,34 @@ export function CourseResults({ extractedCourses }: CourseResultsProps) {
         <CardDescription>
           {extractedCourses.length} kode enrollment berhasil diekstrak
         </CardDescription>
+        <CardAction>
+          <Button
+            onClick={() => {
+              const allCodes = extractedCourses
+                .map((course) => course.kodeEnroll)
+                .join('\n');
+              copyToClipboard(allCodes);
+
+              if (!copiedCode) {
+                toast.error('Gagal menyalin semua kode enrollment', {
+                  description: 'Pastikan browser Anda mendukung clipboard API.',
+                });
+                return;
+              }
+
+              toast.success(
+                'Semua kode enrollment berhasil disalin ke clipboard',
+                {
+                  description:
+                    'Anda dapat menempelkannya di halaman pendaftaran kelas.',
+                }
+              );
+            }}
+          >
+            <Copy className="mr-2 h-4 w-4" />
+            Salin Semua Kode
+          </Button>
+        </CardAction>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
