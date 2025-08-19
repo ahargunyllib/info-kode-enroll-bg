@@ -1,5 +1,6 @@
 'use client';
 
+import { X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -10,7 +11,6 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
-import { X } from 'lucide-react';
 
 type CodeConfirmationProps = {
   editableCodes: { id: number; code: string; class: string }[];
