@@ -1,5 +1,7 @@
 'use client';
 
+import { Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -10,8 +12,6 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { useCopyToClipboard } from '@/shared/hooks/use-copy-to-clipboard';
-import { Copy } from 'lucide-react';
-import { toast } from 'sonner';
 import type { CourseData } from '../types/course';
 
 type CourseResultsProps = {
