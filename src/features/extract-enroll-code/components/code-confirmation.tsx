@@ -1,6 +1,5 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import {
   Card,
@@ -11,9 +10,10 @@ import {
   CardTitle,
 } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
+import { X } from 'lucide-react';
 
 type CodeConfirmationProps = {
-  editableCodes: { code: string; class: string }[];
+  editableCodes: { id: number; code: string; class: string }[];
   onUpdateCode: (
     index: number,
     field: 'code' | 'class',
@@ -45,7 +45,7 @@ export default function CodeConfirmation({
           {editableCodes.map((item, index) => (
             <div
               className="flex items-center gap-3 rounded-lg border border-border bg-card p-3"
-              key={`code-${item.code}-${item.class}-${index}`}
+              key={item.id}
             >
               <Input
                 className="flex-1"

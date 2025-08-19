@@ -6,6 +6,7 @@ import Tesseract from 'tesseract.js';
 import { tryCatch } from '../lib/try-catch';
 
 type ExtractedCode = {
+  id: number;
   code: string;
   class: string;
 };
@@ -42,7 +43,7 @@ export function useOCRProcessor() {
     const results: ExtractedCode[] = [];
     const seen = new Set<string>();
 
-    for (const rawLine of text.split(LINE_SPLIT_REGEX)) {
+    for (const [idx, rawLine] of text.split(LINE_SPLIT_REGEX).entries()) {
       const line = rawLine.trim();
       const codeMatch = line.match(COURSE_CODE_REGEX)?.[0]?.toUpperCase();
       if (!codeMatch) {
@@ -54,7 +55,7 @@ export function useOCRProcessor() {
       const key = `${codeMatch}-${className}`;
       if (!seen.has(key)) {
         seen.add(key);
-        results.push({ code: codeMatch, class: className });
+        results.push({ id: idx + 1, code: codeMatch, class: className });
       }
     }
 
@@ -125,7 +126,10 @@ export function useOCRProcessor() {
   const addNewCode = () => {
     setState((prev) => ({
       ...prev,
-      editableCodes: [...prev.editableCodes, { code: '', class: '' }],
+      editableCodes: [
+        ...prev.editableCodes,
+        { id: prev.editableCodes.length + 1, code: '', class: '' },
+      ],
     }));
   };
 
