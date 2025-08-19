@@ -56,7 +56,7 @@ export default function CodeConfirmation({
               />
               <Input
                 className="w-20"
-                maxLength={2}
+                maxLength={3}
                 onChange={(e) => onUpdateCode(index, 'class', e.target.value)}
                 placeholder="Kelas"
                 type="text"
