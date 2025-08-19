@@ -6,6 +6,7 @@ import Tesseract from 'tesseract.js';
 import { tryCatch } from '../lib/try-catch';
 
 type ExtractedCode = {
+  id: number;
   code: string;
   class: string;
 };
@@ -19,8 +20,14 @@ type OCRState = {
   isConfirming: boolean;
 };
 
+// e.g. CIF63106, MPK60007
 const COURSE_CODE_REGEX = /[A-Z]{3}\d{5}/;
-const CLASS_NAME_REGEX = /\b([A-Z])\b/;
+
+// first token on the line, 1-3 letters/digits (e.g. c, E, N7D)
+const CLASS_NAME_REGEX = /^\s*([A-Za-z0-9]{1,3})\b/;
+
+// regex for splitting lines
+const LINE_SPLIT_REGEX = /\r?\n/;
 
 export function useOCRProcessor() {
   const [state, setState] = useState<OCRState>({
@@ -33,24 +40,22 @@ export function useOCRProcessor() {
   });
 
   const extractCourseCodes = (text: string): ExtractedCode[] => {
-    const lines = text.split('\n');
     const results: ExtractedCode[] = [];
-    for (const line of lines) {
-      const codeMatch = line.match(COURSE_CODE_REGEX);
+    const seen = new Set<string>();
+
+    for (const [idx, rawLine] of text.split(LINE_SPLIT_REGEX).entries()) {
+      const line = rawLine.trim();
+      const codeMatch = line.match(COURSE_CODE_REGEX)?.[0]?.toUpperCase();
       if (!codeMatch) {
         continue;
       }
 
-      const courseCode = codeMatch[0];
-      const classMatch = line.match(CLASS_NAME_REGEX);
-      const className = classMatch ? classMatch[1] : '';
+      const className = line.match(CLASS_NAME_REGEX)?.[1]?.toUpperCase() ?? '';
 
-      if (
-        !results.some(
-          (item) => item.code === courseCode && item.class === className
-        )
-      ) {
-        results.push({ code: courseCode, class: className });
+      const key = `${codeMatch}-${className}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        results.push({ id: idx + 1, code: codeMatch, class: className });
       }
     }
 
@@ -119,10 +124,20 @@ export function useOCRProcessor() {
   };
 
   const addNewCode = () => {
-    setState((prev) => ({
-      ...prev,
-      editableCodes: [...prev.editableCodes, { code: '', class: '' }],
-    }));
+    setState((prev) => {
+      const nextId =
+        prev.editableCodes.reduce(
+          (max, item) => (item.id > max ? item.id : max),
+          0
+        ) + 1;
+      return {
+        ...prev,
+        editableCodes: [
+          ...prev.editableCodes,
+          { id: nextId, code: '', class: '' },
+        ],
+      };
+    });
   };
 
   const toggleRawText = () => {
