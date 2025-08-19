@@ -124,13 +124,20 @@ export function useOCRProcessor() {
   };
 
   const addNewCode = () => {
-    setState((prev) => ({
-      ...prev,
-      editableCodes: [
-        ...prev.editableCodes,
-        { id: prev.editableCodes.length + 1, code: '', class: '' },
-      ],
-    }));
+    setState((prev) => {
+      const nextId =
+        prev.editableCodes.reduce(
+          (max, item) => (item.id > max ? item.id : max),
+          0
+        ) + 1;
+      return {
+        ...prev,
+        editableCodes: [
+          ...prev.editableCodes,
+          { id: nextId, code: '', class: '' },
+        ],
+      };
+    });
   };
 
   const toggleRawText = () => {
